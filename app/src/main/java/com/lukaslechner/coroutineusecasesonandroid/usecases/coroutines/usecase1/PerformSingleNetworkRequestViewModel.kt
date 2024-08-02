@@ -8,6 +8,11 @@ class PerformSingleNetworkRequestViewModel(
 ) : BaseViewModel<UiState>() {
 
     fun performSingleNetworkRequest() {
+        uiState.value = UiState.Loading
 
+        viewModelScope.launch {
+            val recentAndroidVersions = mockApi.getRecentAndroidVersions()
+            uiState.value = UiState.Success(recentAndroidVersions)
+        }
     }
 }
