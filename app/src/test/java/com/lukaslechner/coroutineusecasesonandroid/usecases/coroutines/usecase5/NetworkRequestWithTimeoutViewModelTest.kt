@@ -85,7 +85,7 @@ class NetworkRequestWithTimeoutViewModelTest {
             Assert.assertEquals(
                 listOf(
                     UiState.Loading,
-                    UiState.Error("Network request failed!")
+                    UiState.Error("Network request failed.")
                 ),
                 receivedUiStates
             )
