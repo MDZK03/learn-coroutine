@@ -54,7 +54,7 @@ class PerformSingleNetworkRequestViewModelTest {
         assertEquals(
             listOf(
                 UiState.Loading,
-                UiState.Error("Network Request failed!")
+                UiState.Error("Network request failed.")
             ),
             receivedUiStates
         )
