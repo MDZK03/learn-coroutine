@@ -53,7 +53,7 @@ class FlowUseCase2ViewModel(
         // (3), index +1 cuz index starts from 0
         .map { stockList -> stockList.mapIndexed { index, stock -> stock.copy(rank = index + 1) } }
         .map { stockList -> UiState.Success(stockList) as UiState }
-        .onStart { emit(UiState.Loading) }
+        .onStart { emit(UiState.Loading) }  //loading animation
         .onCompletion { Timber.d("Flow completed.") }
         .asLiveData(defaultDispatcher)
 }
