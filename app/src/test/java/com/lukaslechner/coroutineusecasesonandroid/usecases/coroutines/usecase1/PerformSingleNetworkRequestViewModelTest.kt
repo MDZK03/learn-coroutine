@@ -23,7 +23,7 @@ class PerformSingleNetworkRequestViewModelTest {
     private val receivedUiStates = mutableListOf<UiState>()
 
     @Test
-    fun `should return Success when network request is successful`() = runTest {
+    fun `return Success when network request successes`() = runTest {
         val fakeApi = FakeSuccessApi()
         val viewModel = PerformSingleNetworkRequestViewModel(fakeApi)
         observeViewModel(viewModel)
@@ -42,7 +42,7 @@ class PerformSingleNetworkRequestViewModelTest {
     }
 
     @Test
-    fun `should return Error when network request fails`() = runTest {
+    fun `return Error when network request fails`() = runTest {
         val fakeApi = FakeErrorApi()
         val viewModel = PerformSingleNetworkRequestViewModel(fakeApi)
         observeViewModel(viewModel)
