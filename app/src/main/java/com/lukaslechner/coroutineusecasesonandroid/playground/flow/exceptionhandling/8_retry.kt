@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 
@@ -34,13 +35,26 @@ private fun stocksFlow(): Flow<String> = flow {
             throw NetworkException("Network Request Failed!")
         }
     }
-}.retryWhen { cause, attempt -> //attempt starts at 0
-    if (cause is NetworkException) {
-        println("Retrying with exception: $cause")
-        delay(1000 * (attempt+1))
-        attempt < 2 //will retry 2 times
+}.retryWhen { e, attempt -> //attempt starts at 0
+    if (e is NetworkException && attempt < 2) {
+        println("Retrying with exception: $e")
+        delay(1000 * (attempt + 1))
+        true
     } else false
-
+    
+    //if (e is NetWorkException || attempt < 2) 
+    // retry forever with NetWorkException
+    // or retry 2 times with any other exception
 }
+
+/* .retry(3) { e ->
+    (e is NetworkException).also {
+        println("Retrying with $e")
+        delay(1000)
+    }
+}    */
+
+
+
 
 class NetworkException(message: String) : Exception(message)
