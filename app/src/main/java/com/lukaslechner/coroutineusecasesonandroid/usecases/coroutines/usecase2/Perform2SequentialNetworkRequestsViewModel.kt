@@ -14,9 +14,9 @@ class Perform2SequentialNetworkRequestsViewModel(
 
         viewModelScope.launch{
             try {
-                val recentVersion = mockApi.getRecentAndroidVersions()
-                val mostRecentVersion = recentVersion.last()
+                val mostRecentVersion = mockApi.getRecentAndroidVersions().last()
                 val featuresOfMostRecentVersion = mockApi.getAndroidVersionFeatures(mostRecentVersion.apiLevel)
+                
                 uiState.value = UiState.Success(featuresOfMostRecentVersion)
             } catch (exception: Exception) {
                 uiState.value = UiState.Error("Network request failed!")
