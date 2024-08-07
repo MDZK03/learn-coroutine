@@ -34,7 +34,7 @@ class ExceptionHandlingActivity : BaseActivity() {
             }
         })
         binding.btnExceptionTryCatch.setOnClickListener {
-            viewModel.handleExceptionWithTryCatch()
+            viewModel.handleWithTryCatch()
         }
         binding.btnCoroutineExceptionHandler.setOnClickListener {
             viewModel.handleWithCoroutineExceptionHandler()
