@@ -10,30 +10,25 @@ import java.math.BigInteger
 import kotlin.system.measureTimeMillis
 
 class CalculationInBackgroundViewModel : BaseViewModel<UiState>() {
+    private var dispatcher = Dispatchers.Default
 
     fun performCalculation(factorialOf: Int) {
         uiState.value = UiState.Loading
-        viewModelScope.launch {
 
+        viewModelScope.launch {
             Timber.d("Coroutine Context: $coroutineContext")
+
             var result: BigInteger
-            val computationDuration = measureTimeMillis {
-                result = calculateFactorial(factorialOf)
-            }
+            val computationDuration = measureTimeMillis { result = calculateFactorial(factorialOf) }
 
             var resultString: String
-            val stringConvertDuration = measureTimeMillis {
-                resultString = withContext(Dispatchers.Default) {
-                    result.toString()
-                }
-            }
-            uiState.value =
-                UiState.Success(resultString, computationDuration, stringConvertDuration)
+            val stringConvertDuration = measureTimeMillis { resultString = withContext(dispatcher) { result.toString() } }
+
+            uiState.value = UiState.Success(resultString, computationDuration, stringConvertDuration)
         }
     }
 
-    private suspend fun calculateFactorial (number: Int): BigInteger  = withContext(Dispatchers.Default)
-    {
+    private suspend fun calculateFactorial (number: Int): BigInteger  = withContext(dispatcher) {
         var factorial = BigInteger.ONE
         for (i in 1..number) {
             factorial = factorial.multiply(BigInteger.valueOf(i.toLong()))
