@@ -26,11 +26,11 @@ class PerformNetworkRequestsConcurrentlyViewModelTest {
     private val receivedUiStates = mutableListOf<UiState>()
 
     @Test
-    fun `uc3 return data after 3 times the response delay`() =
-        runTest {
+    fun `uc3 return data after 3 times the response delay`() = runTest {
             val responseDelay = 1000L
             val fakeApi = FakeSuccessApi(responseDelay)
             val viewModel = PerformNetworkRequestsConcurrentlyViewModel(fakeApi)
+
             viewModel.observe()
 
             Assert.assertTrue(receivedUiStates.isEmpty())
@@ -49,24 +49,18 @@ class PerformNetworkRequestsConcurrentlyViewModelTest {
                             mockVersionFeaturesAndroid10
                         )
                     )
-                ),
-                receivedUiStates
+                ), receivedUiStates
             )
 
-            // Verify requests got executed sequentially and it took
-            // 3000ms to receive all data
-            Assert.assertEquals(
-                3000,
-                currentTime
-            )
+            Assert.assertEquals(3000, currentTime)
         }
 
     @Test
-    fun `uc3 return data after the response delay`() =
-        runTest {
+    fun `uc3 return data after the response delay`() = runTest {
             val responseDelay = 1000L
             val fakeApi = FakeSuccessApi(responseDelay)
             val viewModel = PerformNetworkRequestsConcurrentlyViewModel(fakeApi)
+
             viewModel.observe()
 
             Assert.assertTrue(receivedUiStates.isEmpty())
@@ -85,23 +79,18 @@ class PerformNetworkRequestsConcurrentlyViewModelTest {
                             mockVersionFeaturesAndroid10
                         )
                     )
-                ),
-                receivedUiStates
+                ), receivedUiStates
             )
 
-            // Verify requests got executed concurrently within 1000ms
-            Assert.assertEquals(
-                1000,
-                currentTime
-            )
+            Assert.assertEquals(1000, currentTime)
         }
 
     @Test
-    fun `uc3 return Error when network request fails`() =
-        runTest {
+    fun `uc3 return Error when network request fails`() = runTest {
             val responseDelay = 1000L
             val fakeApi = FakeErrorApi(responseDelay)
             val viewModel = PerformNetworkRequestsConcurrentlyViewModel(fakeApi)
+
             viewModel.observe()
 
             Assert.assertTrue(receivedUiStates.isEmpty())
@@ -114,8 +103,7 @@ class PerformNetworkRequestsConcurrentlyViewModelTest {
                 listOf(
                     UiState.Loading,
                     UiState.Error("Network request failed.")
-                ),
-                receivedUiStates
+                ), receivedUiStates
             )
         }
 
