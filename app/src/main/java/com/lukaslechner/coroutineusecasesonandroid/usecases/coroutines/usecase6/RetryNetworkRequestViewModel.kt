@@ -20,18 +20,9 @@ class RetryNetworkRequestViewModel(
                 retry(numberOfRetries) {
                     loadAndroidVersion()
                 }
-                /* repeat(numberOfRetries) {
-                    try {
-                        loadAndroidVersion()
-                        return@launch
-                    } catch (exception: Exception) {
-                        Timber.e(exception) // log the exception
-                    }
-                }
-                loadAndroidVersion() */
             } catch (exception: Exception) {
-                Timber.e(exception) // log the exception
-                uiState.value = UiState.Error("Network request failed.") //toast msg to show error
+                Timber.e(exception)
+                uiState.value = UiState.Error("Network request failed.")
             }
         }
     }
@@ -40,7 +31,7 @@ class RetryNetworkRequestViewModel(
         numOfRetries: Int,
         initialDelayMilisec: Long = 100,
         maxDelayMilisec: Long = 3000,
-        factor: Double = 2.5, //after each retry attempt, * factor
+        factor: Double = 2.5,
         block: suspend ()-> T): T {
         var currentDelay = initialDelayMilisec
         repeat(numOfRetries) {
@@ -57,7 +48,7 @@ class RetryNetworkRequestViewModel(
 
     private suspend fun loadAndroidVersion() {
         val recentAndroidVersions = api.getRecentAndroidVersions()
-        uiState.value = UiState.Success(recentAndroidVersions) //show result
+        uiState.value = UiState.Success(recentAndroidVersions)
     }
 
 }
