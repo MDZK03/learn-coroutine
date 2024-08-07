@@ -3,6 +3,7 @@ package com.lukaslechner.coroutineusecasesonandroid.usecases.coroutines.usecase7
 import androidx.lifecycle.viewModelScope
 import com.lukaslechner.coroutineusecasesonandroid.base.BaseViewModel
 import com.lukaslechner.coroutineusecasesonandroid.mock.MockApi
+import com.lukaslechner.coroutineusecasesonandroid.mock.VersionFeatures
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -12,30 +13,19 @@ class TimeoutAndRetryViewModel(
 
     fun performNetworkRequest() {
         uiState.value = UiState.Loading
-        val numberOfRetries = 2
-        val timeout = 1000L
-
-        val oreoVersionsDeferred = viewModelScope.async {
-            retryWithTimeout(numberOfRetries, timeout) {
-                api.getAndroidVersionFeatures(27)
-            }
-        }
-
-        val pieVersionsDeferred = viewModelScope.async {
-            retryWithTimeout(numberOfRetries, timeout) {
-                api.getAndroidVersionFeatures(28)
-            }
-        }
 
         viewModelScope.launch {
             try {
-                val versionFeatures = listOf(
-                    oreoVersionsDeferred,
-                    pieVersionsDeferred
-                ).awaitAll()
+                val numberOfRetries = 2
+                val timeout = 1000L
+
+                val versionFeatures = awaitAll(
+                    async { retryWithTimeout(numberOfRetries,timeout) {getFeatures(27)}},
+                    async { retryWithTimeout(numberOfRetries,timeout) {getFeatures(28)}},
+                    async { retryWithTimeout(numberOfRetries,timeout) {getFeatures(29)}}
+                )
 
                 uiState.value = UiState.Success(versionFeatures)
-
             } catch (e: Exception) {
                 Timber.e(e)
                 uiState.value = UiState.Error("Network Request failed")
@@ -47,11 +37,7 @@ class TimeoutAndRetryViewModel(
         numberOfRetries: Int,
         timeout: Long,
         block: suspend () -> T
-    ) = retry(numberOfRetries) {
-        withTimeout(timeout) {
-            block()
-        }
-    }
+    ) = retry(numberOfRetries) { withTimeout(timeout) { block() } }
 
     private suspend fun <T> retry(
         numberOfRetries: Int,
@@ -66,6 +52,10 @@ class TimeoutAndRetryViewModel(
             }
             delay(delayBetweenRetries)
         }
-        return block() // last attempt
+        return block()
+    }
+
+    private suspend fun getFeatures(apiLevel: Int): VersionFeatures {
+        return api.getAndroidVersionFeatures(apiLevel)
     }
 }
