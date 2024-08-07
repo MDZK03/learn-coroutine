@@ -1,9 +1,7 @@
 package com.lukaslechner.coroutineusecasesonandroid.usecases.coroutines.usecase11
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lukaslechner.coroutineusecasesonandroid.base.BaseViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +15,7 @@ import kotlin.system.measureTimeMillis
 
 class CooperativeCancellationViewModel(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
-) : ViewModel() {
+) : BaseViewModel<UiState>() {
 
     private var cancellableJob: Job? = null
     fun performCalculation(factorialOf: Int) {
@@ -27,20 +25,15 @@ class CooperativeCancellationViewModel(
             try {
                 Timber.d("Coroutine Context: $coroutineContext")
                 var result: BigInteger
-                val computationDuration = measureTimeMillis {
-                    result = calculateFactorial(factorialOf)
-                }
+                val computationDuration = measureTimeMillis { result = calculateFactorial(factorialOf) }
 
                 var resultString: String
                 val stringConvertDuration = measureTimeMillis {
-                    resultString = withContext(defaultDispatcher) {
-                        result.toString()
-                    }
+                    resultString = withContext(defaultDispatcher) { result.toString() }
                 }
-                uiState.value =
-                    UiState.Success(resultString, computationDuration, stringConvertDuration)
-            } catch (exception: Exception) {
-                if (exception is CancellationException) {
+                uiState.value = UiState.Success(resultString, computationDuration, stringConvertDuration)
+            } catch (e: Exception) {
+                if (e is CancellationException) {
                     uiState.value = UiState.Error("Calculation cancelled.")
                 } else uiState.value = UiState.Error("Error while calculating.")
             }
@@ -56,11 +49,5 @@ class CooperativeCancellationViewModel(
         factorial
     }
 
-    fun cancelCalculation() {
-        cancellableJob?.cancel()
-    }
-
-    fun uiState(): LiveData<UiState> = uiState
-
-    private val uiState: MutableLiveData<UiState> = MutableLiveData()
+    fun cancelCalculation() { cancellableJob?.cancel() }
 }
