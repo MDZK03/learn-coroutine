@@ -11,15 +11,15 @@ class PerformSingleNetworkRequestViewModel(
 ) : BaseViewModel<UiState>() {
 
     fun performSingleNetworkRequest() {
-        uiState.value = UiState.Loading //show loading
+        uiState.value = UiState.Loading
 
         viewModelScope.launch {
             try {
                 val recentAndroidVersions = mockApi.getRecentAndroidVersions()
-                uiState.value = UiState.Success(recentAndroidVersions) //show result
+                uiState.value = UiState.Success(recentAndroidVersions)
             } catch (exception: Exception) {
-                Timber.e(exception) // log the exception
-                uiState.value = UiState.Error("Network request failed.") //toast msg to show error
+                Timber.e(exception)
+                uiState.value = UiState.Error("Network request failed.")
             }
         }
     }
